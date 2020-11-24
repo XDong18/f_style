@@ -385,6 +385,7 @@ def train_seg(args):
         validate(val_loader, model, criterion, eval_score=accuracy)
         return
 
+    validate(val_loader, model, criterion, eval_score=accuracy) # TODO delete
     for epoch in range(start_epoch, args.epochs):
         lr = adjust_learning_rate(args, optimizer, epoch)
         print('Epoch: [{0}]\tlr {1:.06f}'.format(epoch, lr))
