@@ -158,6 +158,7 @@ class RefineNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        origin_size = x.size()[2:]
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -209,6 +210,7 @@ class RefineNet(nn.Module):
         x1 = self.do(x1)
 
         out = self.clf_conv(x1)
+        out = nn.Upsample(size=origin_size, mode='bilinear', align_corners=True)(out)
         return self.softmax(out)
 
 
