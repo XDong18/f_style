@@ -1,6 +1,6 @@
 export PYTHONPATH="${PYTHONPATH}:/shared/xudongliu/code/f_style/lib"
 export CUDA_VISIBLE_DEVICES=2,3,4,5
 python segment_refinenet.py train -d /shared/xudongliu/bdd100k/seg/seg -c 19 -s 769 --arch dla34up \
-    --batch-size 8 --lr 0.005 --momentum 0.9 --lr-mode poly \
+    --batch-size 8 --lr 0.001 --momentum 0.9 --lr-mode poly \
     --epochs 500 --bn-sync --random-scale 2 --random-rotate 0 \
-    --random-color --pretrained-base imagenet -o out/refinenet101_769_0.005_500e
+    --random-color --pretrained-base imagenet -o out/refinenet101_769_0.001_500e
