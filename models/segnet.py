@@ -49,6 +49,7 @@ class SegNet(nn.Module):
         self._initialize_weights(self.stage1_decoder, self.stage2_decoder, self.stage3_decoder,
                                     self.stage4_decoder, self.stage5_decoder)
         if freeze_bn: self.freeze_bn()
+        self.softmax = nn.LogSoftmax(dim=1)
         # if freeze_backbone: 
         #     set_trainable([self.stage1_encoder, self.stage2_encoder, self.stage3_encoder, self.stage4_encoder, self.stage5_encoder], False)
 
@@ -100,8 +101,9 @@ class SegNet(nn.Module):
 
         x = self.unpool(x, indices=indices1, output_size=x1_size)
         x = self.stage5_decoder(x)
+        y = self.softmax(x)
 
-        return x
+        return y
 
     def get_backbone_params(self):
         return []
