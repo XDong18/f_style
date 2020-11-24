@@ -168,39 +168,39 @@ def validate(val_loader, model, criterion, eval_score=None, print_freq=10):
 
     # switch to evaluate mode
     model.eval()
-
     end = time.time()
-    for i, (input, target) in enumerate(val_loader):
-        if type(criterion) in [torch.nn.modules.loss.L1Loss,
-                               torch.nn.modules.loss.MSELoss]:
-            target = target.float()
-        input = input.cuda()
-        target = target.cuda(async=True)
-        input_var = torch.autograd.Variable(input, volatile=True)
-        target_var = torch.autograd.Variable(target, volatile=True)
+    with torch.no_grad():
+        for i, (input, target) in enumerate(val_loader):
+            if type(criterion) in [torch.nn.modules.loss.L1Loss,
+                                torch.nn.modules.loss.MSELoss]:
+                target = target.float()
+            input = input.cuda()
+            target = target.cuda(async=True)
+            input_var = torch.autograd.Variable(input, volatile=True)
+            target_var = torch.autograd.Variable(target, volatile=True)
 
-        # compute output
-        output = model(input_var)
-        loss = criterion(output, target_var)
-        confusion_matrix.update_matrix(target, output)
+            # compute output
+            output = model(input_var)
+            loss = criterion(output, target_var)
+            confusion_matrix.update_matrix(target, output)
 
-        # measure accuracy and record loss
-        # prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
-        losses.update(loss.data[0], input.size(0))
-        if eval_score is not None:
-            score.update(eval_score(output, target_var), input.size(0))
+            # measure accuracy and record loss
+            # prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
+            losses.update(loss.data[0], input.size(0))
+            if eval_score is not None:
+                score.update(eval_score(output, target_var), input.size(0))
 
-        # measure elapsed time
-        batch_time.update(time.time() - end)
-        end = time.time()
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
 
-        if i % print_freq == 0:
-            print('Test: [{0}/{1}]\t'
-                  'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-                  'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                  'Score {score.val:.3f} ({score.avg:.3f})'.format(
-                    i, len(val_loader), batch_time=batch_time, loss=losses,
-                    score=score), flush=True)
+            if i % print_freq == 0:
+                print('Test: [{0}/{1}]\t'
+                    'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                    'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                    'Score {score.val:.3f} ({score.avg:.3f})'.format(
+                        i, len(val_loader), batch_time=batch_time, loss=losses,
+                        score=score), flush=True)
 
     miou, top_1, top_5 = confusion_matrix.compute_current_mean_intersection_over_union()
     print(' * Score {top1.avg:.3f}'.format(top1=score))
@@ -385,7 +385,7 @@ def train_seg(args):
         validate(val_loader, model, criterion, eval_score=accuracy)
         return
 
-    validate(val_loader, model, criterion, eval_score=accuracy) # TODO delete
+    # validate(val_loader, model, criterion, eval_score=accuracy) # TODO delete
     for epoch in range(start_epoch, args.epochs):
         lr = adjust_learning_rate(args, optimizer, epoch)
         print('Epoch: [{0}]\tlr {1:.06f}'.format(epoch, lr))
