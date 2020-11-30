@@ -317,7 +317,7 @@ def train_seg(args):
         print(k, ':', v)
 
     pretrained_base = args.pretrained_base
-    single_model = SegNet(args.classes, pretrained=True)
+    single_model = SegNet(args.classes)
     # single_model = dla_up.__dict__.get(args.arch)(
     #     args.classes, pretrained_base, down_ratio=args.down)
     model = torch.nn.DataParallel(single_model).cuda()
@@ -613,7 +613,7 @@ def test_seg(args):
     for k, v in args.__dict__.items():
         print(k, ':', v)
 
-    single_model = SegNet(args.classes, pretrained=True)
+    single_model = SegNet(args.classes)
     # single_model = dla_up.__dict__.get(args.arch)(
     #     args.classes, down_ratio=args.down)
 
