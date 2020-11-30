@@ -24,7 +24,7 @@ import dla_up
 import data_transforms as transforms
 import dataset
 from miou import RunningConfusionMatrix
-from models.segnet import SegNet
+from models.segnet_new import SegNet
 
 try:
     from modules import batchnormsync
