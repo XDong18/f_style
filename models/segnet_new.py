@@ -37,6 +37,7 @@ class SegNet(nn.Module):
 
         # final classifier (equivalent to a fully connected layer)
         self.classifier = nn.Conv2d(filter_config[0], num_classes, 3, 1, 1)
+        self.softmax = nn.LogSoftmax(dim=1)
 
     def forward(self, x):
         indices = []
@@ -53,7 +54,7 @@ class SegNet(nn.Module):
         for i in range(0, 5):
             feat = self.decoders[i](feat, indices[4 - i], unpool_sizes[4 - i])
 
-        return self.classifier(feat)
+        return self.softmax(self.classifier(feat))
 
 
 class _Encoder(nn.Module):
