@@ -12,7 +12,7 @@ class SegNet(nn.Module):
         drop_rate (float): dropout rate of each encoder/decoder module
         filter_config (list of 5 ints): number of output features at each level
     """
-    def __init__(self, num_classes, n_init_features=1, drop_rate=0.5,
+    def __init__(self, num_classes, n_init_features=3, drop_rate=0.1,
                  filter_config=(64, 128, 256, 512, 512)):
         super(SegNet, self).__init__()
 
