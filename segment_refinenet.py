@@ -406,6 +406,7 @@ def train_seg(args):
             'arch': args.arch,
             'state_dict': model.state_dict(),
             'best_prec1': best_prec1,
+            'prec1': prec1,
         }, is_best, filename=checkpoint_path)
         if (epoch + 1) % args.save_freq == 0:
             history_path = os.path.join(checkpoint_dir, 'checkpoint_{:03d}.pth.tar'.format(epoch + 1))
