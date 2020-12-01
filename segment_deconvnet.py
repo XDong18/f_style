@@ -25,6 +25,7 @@ import data_transforms as transforms
 import dataset
 from miou import RunningConfusionMatrix
 from models.deconvnet import conv_deconv
+import torchvision
 
 try:
     from modules import batchnormsync
@@ -62,7 +63,7 @@ CITYSCAPE_PALLETE = np.asarray([
 
 
 class SegList(torch.utils.data.Dataset):
-    def __init__(self, data_dir, phase, transforms, list_dir=None,
+    def __init__(self, data_dir, phase, transforms, base_transform, list_dir=None,
                  out_name=False, out_size=False, binary=False):
         self.list_dir = data_dir if list_dir is None else list_dir
         self.data_dir = data_dir
@@ -75,6 +76,7 @@ class SegList(torch.utils.data.Dataset):
         self.out_size = out_size
         self.binary = binary
         self.read_lists()
+        self.base_transform = base_transform
 
     def __getitem__(self, index):
         image = Image.open(join(self.data_dir, self.image_list[index]))
@@ -88,6 +90,9 @@ class SegList(torch.utils.data.Dataset):
         if self.bbox_list is not None:
             data.append(Image.open(join(self.data_dir, self.bbox_list[index])))
         data = list(self.transforms(*data))
+
+        data[0] = torchvision.transforms.functional.resize(data[0])
+        data = list(self.base_transforms(*data))
         if self.out_name:
             if self.label_list is None:
                 data.append(data[0][0, :, :])
@@ -95,7 +100,7 @@ class SegList(torch.utils.data.Dataset):
         if self.out_size:
             data.append(torch.from_numpy(np.array(image.size, dtype=int)))
         
-        
+
         return tuple(data)
 
     def __len__(self):
@@ -343,11 +348,11 @@ def train_seg(args):
     t.append(transforms.RandomCrop(crop_size))
     if args.random_color:
         t.append(transforms.RandomJitter(0.4, 0.4, 0.4))
-    t.extend([transforms.RandomHorizontalFlip(),
-              transforms.ToTensor(),
-              normalize])
+    t.extend([transforms.RandomHorizontalFlip()])
+    t_base = [transforms.ToTensor(),
+              normalize]
     train_loader = torch.utils.data.DataLoader(
-        SegList(data_dir, 'train', transforms.Compose(t),
+        SegList(data_dir, 'train', transforms.Compose(t), transforms.Compose(t_base),
                 binary=(args.classes == 2)),
         batch_size=batch_size, shuffle=True, num_workers=num_workers,
         pin_memory=True
@@ -356,9 +361,7 @@ def train_seg(args):
         SegList(data_dir, 'val', transforms.Compose([
             transforms.RandomCrop(crop_size),
             # transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            normalize,
-        ]), binary=(args.classes == 2)),
+        ]),  transforms.Compose(t_base), binary=(args.classes == 2)),
         batch_size=4, shuffle=False, num_workers=num_workers,
         pin_memory=True
     )
@@ -634,11 +637,13 @@ def test_seg(args):
     t = []
     if args.crop_size > 0:
         t.append(transforms.PadToSize(args.crop_size))
-    t.extend([transforms.ToTensor(), normalize])
+    # t.extend([transforms.ToTensor(), normalize])
+    t_base = [transforms.ToTensor(),
+              normalize]
     if args.ms:
         data = SegListMS(data_dir, phase, transforms.Compose(t), scales)
     else:
-        data = SegList(data_dir, phase, transforms.Compose(t),
+        data = SegList(data_dir, phase, transforms.Compose(t), transforms.Compose(t_base),
                        out_name=True, out_size=True,
                        binary=args.classes == 2)
     test_loader = torch.utils.data.DataLoader(

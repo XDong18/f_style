@@ -155,8 +155,8 @@ class conv_deconv(nn.Module):
             my_indice += 1
 
     def forward(self,x):
-        origin_size = x.size()[2:]
-        output = torchvision.transforms.functional.resize(x, 224)
+        # origin_size = x.size()[2:]
+        # output = torchvision.transforms.functional.resize(x, 224)
         index_pool = 1
         for i, layer in enumerate(self.conv_features):
             if isinstance(layer, torch.nn.MaxPool2d):
@@ -175,5 +175,5 @@ class conv_deconv(nn.Module):
                 index_pool -= 1
             else:
                 output = layer(output)
-        out = F.upsample(self.seg_conv(output), origin_size, mode='bilinear', align_corners=True)
+        out = F.upsample(self.seg_conv(output), 769, mode='bilinear', align_corners=True)
         return self.softmax(out)
