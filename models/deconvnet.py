@@ -112,7 +112,7 @@ class conv_deconv(nn.Module):
             torch.nn.BatchNorm2d(256),
             torch.nn.ReLU(),
             torch.nn.ConvTranspose2d(256, 128, 3, padding=1),
-            torch.nn.BatchNorm2d(256),
+            torch.nn.BatchNorm2d(128),
             torch.nn.ReLU(),
 
             # deconv 2
@@ -121,7 +121,7 @@ class conv_deconv(nn.Module):
             torch.nn.BatchNorm2d(128),
             torch.nn.ReLU(),
             torch.nn.ConvTranspose2d(128, 64, 3, padding=1),
-            torch.nn.BatchNorm2d(128),
+            torch.nn.BatchNorm2d(64),
             torch.nn.ReLU(),
 
             # deconv 1
