@@ -92,7 +92,7 @@ class SegList(torch.utils.data.Dataset):
         data = list(self.transforms(*data))
 
         data[0] = torchvision.transforms.functional.resize(data[0], 224)
-        data = list(self.base_transforms(*data))
+        data = list(self.base_transform(*data))
         if self.out_name:
             if self.label_list is None:
                 data.append(data[0][0, :, :])
