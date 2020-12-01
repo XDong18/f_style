@@ -154,6 +154,7 @@ class conv_deconv(nn.Module):
             my_indice += 1
 
     def forward(self,x):
+        output = x
         index_pool = 1
         for i, layer in enumerate(self.conv_features):
             if isinstance(layer, torch.nn.MaxPool2d):
