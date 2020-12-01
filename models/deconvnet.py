@@ -169,7 +169,7 @@ class conv_deconv(nn.Module):
         index_pool -= 1
         for i, layer in enumerate(self.deconv_features):
             if isinstance(layer, torch.nn.MaxUnpool2d):
-                output = layer(output, self.pool_indices[index_pool])
+                output = layer(output, self.pool_indices[index_pool].to(output.device))
                 index_pool -= 1
             else:
                 output = layer(output)
