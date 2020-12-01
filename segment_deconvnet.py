@@ -94,6 +94,8 @@ class SegList(torch.utils.data.Dataset):
             data.append(self.image_list[index])
         if self.out_size:
             data.append(torch.from_numpy(np.array(image.size, dtype=int)))
+        
+        
         return tuple(data)
 
     def __len__(self):

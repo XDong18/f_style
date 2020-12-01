@@ -5,6 +5,7 @@ import torch.nn.init as init
 import math
 import numpy as np
 from torchvision import models
+import torchvision.transforms.functional.resize as resize
 
 vgg16_pretrained = models.vgg16(pretrained=True)
 #from .BasicModule import BasicModule
@@ -154,7 +155,8 @@ class conv_deconv(nn.Module):
             my_indice += 1
 
     def forward(self,x):
-        output = x
+        origin_size = x.size()[2:]
+        output = resize(x, 224)
         index_pool = 1
         for i, layer in enumerate(self.conv_features):
             if isinstance(layer, torch.nn.MaxPool2d):
@@ -173,5 +175,5 @@ class conv_deconv(nn.Module):
                 index_pool -= 1
             else:
                 output = layer(output)
-        
-        return self.softmax(self.seg_conv(output))
+        out = F.upsample(self.seg_conv(output), origin_size, mode='bilinear', align_corners=True)
+        return self.softmax(out)
