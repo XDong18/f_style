@@ -5,7 +5,7 @@ import torch.nn.init as init
 import math
 import numpy as np
 from torchvision import models
-import torchvision.transforms.functional.resize as resize
+import torchvision
 
 vgg16_pretrained = models.vgg16(pretrained=True)
 #from .BasicModule import BasicModule
@@ -156,7 +156,7 @@ class conv_deconv(nn.Module):
 
     def forward(self,x):
         origin_size = x.size()[2:]
-        output = resize(x, 224)
+        output = torchvision.transforms.functional.resize(x, 224)
         index_pool = 1
         for i, layer in enumerate(self.conv_features):
             if isinstance(layer, torch.nn.MaxPool2d):
