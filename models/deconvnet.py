@@ -6,6 +6,7 @@ import math
 import numpy as np
 from torchvision import models
 
+vgg16_pretrained = models.vgg16(pretrained=True)
 #from .BasicModule import BasicModule
 class conv_deconv(nn.Module):
 
@@ -137,9 +138,20 @@ class conv_deconv(nn.Module):
 
         # self.feature_outputs = [0]*len(self.features)
         self.pool_indices = dict()        
-        self._initialize_weights()
         self.softmax = nn.LogSoftmax(dim=1)
-        
+        self._initialize_weights()
+    
+    def _initialize_weights(self):
+        # initializing weights using ImageNet-trained model from PyTorch
+        my_indice = 0
+        for i, layer in enumerate(self.conv_features):
+            if isinstance(layer, torch.nn.BatchNorm2d):
+                my_indice -= 1
+            if isinstance(layer, torch.nn.Conv2d):
+                if my_indice < len(vgg16_pretrained.features):
+                    self.conv_features[i].weight.data = vgg16_pretrained.features[my_indice].weight.data
+                    self.conv_features[i].bias.data = vgg16_pretrained.features[my_indice].bias.data
+            my_indice += 1
 
     def forward(self,x):
         index_pool = 1
