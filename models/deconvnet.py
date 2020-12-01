@@ -142,8 +142,6 @@ class conv_deconv(nn.Module):
         
 
     def forward(self,x):
-        input_size = x.size()[2:]
-        output = F. # TODO resize
         index_pool = 1
         for i, layer in enumerate(self.conv_features):
             if isinstance(layer, torch.nn.MaxPool2d):
