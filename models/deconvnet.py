@@ -157,6 +157,7 @@ class conv_deconv(nn.Module):
     def forward(self,x):
         # origin_size = x.size()[2:]
         # output = torchvision.transforms.functional.resize(x, 224)
+        output = x
         index_pool = 1
         for i, layer in enumerate(self.conv_features):
             if isinstance(layer, torch.nn.MaxPool2d):
