@@ -7,7 +7,7 @@ import numpy as np
 from utils.helpers import maybe_download
 from utils.layer_factory import conv1x1, conv3x3, CRPBlock, RCUBlock
 
-import torchvision.transforms.functional.resize as resize
+
 
 data_info = {
     21: 'VOC',
