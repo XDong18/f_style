@@ -420,8 +420,8 @@ def adjust_learning_rate(args, optimizer, epoch):
         lr = args.lr * (0.1 ** (epoch // args.step))
     elif args.lr_mode == 'poly':
         lr = args.lr * (1 - epoch / args.epochs) ** 0.9
-        if epoch == 0:
-            lr = args.lr / 10
+        # if epoch == 0:
+        #     lr = args.lr / 10
     else:
         raise ValueError('Unknown lr mode {}'.format(args.lr_mode))
 
